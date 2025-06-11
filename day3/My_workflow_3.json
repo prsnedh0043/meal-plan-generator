@@ -1,0 +1,231 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1HzgFGgG_Iotf5dPGqhYJQOw-0B7GqJAi-Erc7vlJwsI",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HzgFGgG_Iotf5dPGqhYJQOw-0B7GqJAi-Erc7vlJwsI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HzgFGgG_Iotf5dPGqhYJQOw-0B7GqJAi-Erc7vlJwsI/edit#gid=0"
+        },
+        "event": "rowUpdate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        0
+      ],
+      "id": "ed805c25-6a45-4fc5-ac62-6b56591abae0",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "SCrX0cTQEZgk4wJj",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are my personal finance assistant.\n\nCreate a short and clear payment reminder message for me to follow up on an overdue invoice.\n\nInput:\nInvoice Number{{ $json.Invoice }}: \nDue Date:{{ $json.date }}\nEmail ID:{{ $json['Mail id'] }}\n\nThe tone should be concise and task-focused.\n\nOutput format:\n---\nSubject: Payment Reminder - Invoice #{{ $json[\"Invoice\"] }}\nBody: Reminder to follow up on Invoice #{{ $json[\"Invoice\"] }} due on{{ $json.date }} . Send the reminder to {{ $json['mail id'] }}\n---{{ $json['mail id'] }} sne d a single email",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        0
+      ],
+      "id": "454afecd-5faf-4868-a603-c8c253be6d17",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        220
+      ],
+      "id": "3938b609-ca04-465c-ad2c-ad836027f987",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "W4EwqJn2gt2FJy47",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "pranesh.j.ihub@snsgroups.com",
+          "mode": "list",
+          "cachedResultName": "pranesh.j.ihub@snsgroups.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        120,
+        220
+      ],
+      "id": "692fd35e-0e34-4ad9-a039-5a97d3e0daab",
+      "name": "Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "HJSngvW1D14GKwQ2",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HzgFGgG_Iotf5dPGqhYJQOw-0B7GqJAi-Erc7vlJwsI",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HzgFGgG_Iotf5dPGqhYJQOw-0B7GqJAi-Erc7vlJwsI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HzgFGgG_Iotf5dPGqhYJQOw-0B7GqJAi-Erc7vlJwsI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        340,
+        220
+      ],
+      "id": "3b0189c9-c3bd-4c6f-8038-c4be47a3de3e",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "KLM1OCffR0QMNOMc",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['mail id'] }}",
+        "subject": "hi",
+        "emailType": "text",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        460,
+        215
+      ],
+      "id": "06f5ebca-87c6-4b32-b94c-3c0fca8aa71b",
+      "name": "Gmail",
+      "webhookId": "9b4cb3d8-6730-4dda-be12-5c6b02047d9b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZnctNGQDWpy5xxBq",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "73734b24-82a4-4538-826a-c005527568a6",
+  "meta": {
+    "instanceId": "a86351d86e7cc0de9fd7e9dd70786885f1e0415bc2a720f323b0954cf4869bbd"
+  },
+  "id": "H5jxgja3DPfkOCzw",
+  "tags": []
+}
